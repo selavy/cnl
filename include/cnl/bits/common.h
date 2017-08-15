@@ -42,11 +42,16 @@ namespace cnl {
             static constexpr bool is_arithmetic = true;
         };
 
+        // addition and subtraction
+        struct additive_op : arithmetic_op {
+            static constexpr bool is_additive = true;
+        };
+
         struct comparison_op {
             static constexpr bool is_comparison = true;
         };
 
-        struct minus_op : arithmetic_op {
+        struct minus_op : additive_op {
             template<class Rhs>
             constexpr auto operator()(Rhs const& rhs) const -> decltype(-rhs)
             {
@@ -54,7 +59,7 @@ namespace cnl {
             }
         };
 
-        struct plus_op : arithmetic_op {
+        struct plus_op : additive_op {
             template<class Rhs>
             constexpr auto operator()(Rhs const& rhs) const -> decltype(+rhs)
             {
@@ -62,7 +67,7 @@ namespace cnl {
             }
         };
 
-        struct add_op : arithmetic_op {
+        struct add_op : additive_op {
             template<class Lhs, class Rhs>
             constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const -> decltype(lhs+rhs)
             {
@@ -70,7 +75,7 @@ namespace cnl {
             }
         };
 
-        struct subtract_op : arithmetic_op {
+        struct subtract_op : additive_op {
             template<class Lhs, class Rhs>
             constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const -> decltype(lhs-rhs)
             {

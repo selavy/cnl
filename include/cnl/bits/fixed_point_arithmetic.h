@@ -85,8 +85,8 @@ namespace cnl {
 
                 template<class Lhs, class Rhs>
                 struct rep_op_exponent<_impl::add_op, Lhs, Rhs> : public std::integral_constant<int, _impl::min<int>(
-                        Lhs::exponent,
-                        Rhs::exponent)> {
+                        Lhs::scale::exponent,
+                        Rhs::scale::exponent)> {
                 };
 
                 template<class Lhs, class Rhs>

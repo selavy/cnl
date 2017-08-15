@@ -71,8 +71,7 @@ namespace cnl {
         ////////////////////////////////////////////////////////////////////////////////
         // types
 
-//        /// alias to template parameter, \a Rep
-//        using rep = Rep;
+        using unit_scale = fixed_point_scale<0>;
 
         ////////////////////////////////////////////////////////////////////////////////
         // constants
@@ -191,8 +190,9 @@ namespace cnl {
         /*template<class S>
         static constexpr S rep_to_floating_point(rep r);*/
 
-        /*template<class FromRep, int FromExponent>
-        static constexpr rep fixed_point_to_rep(fixed_point_scale<FromRep, FromExponent> const& rhs);*/
+    public:
+        template<class ToRep, class FromScale, class FromRep>
+        static constexpr ToRep convert(FromRep const& rhs);
     };
 
     /// value of template parameter, \a Exponent
@@ -289,7 +289,7 @@ namespace cnl {
     ////////////////////////////////////////////////////////////////////////////////
     // cnl::fixed_point_scale<> member definitions
 
-    template<int Exponent>
+    /*template<int Exponent>
     template<class S, _impl::enable_if_t<std::numeric_limits<S>::is_iec559, int> Dummy>
     constexpr S fixed_point_scale<Exponent>::one()
     {
@@ -334,13 +334,13 @@ namespace cnl {
     {
         static_assert(std::numeric_limits<S>::is_iec559, "S must be floating-point type");
         return S(r)*inverse_one<S>();
-    }
+    }*/
 
-    template<class Rep, int Exponent>
-    template<class FromRep, int FromExponent>
-    constexpr typename fixed_point_scale<Rep, Exponent>::rep fixed_point_scale<Rep, Exponent>::fixed_point_to_rep(fixed_point_scale<FromRep, FromExponent> const& rhs)
+    template<int Exponent>
+    template<class ToRep, class FromScale, class FromRep>
+    constexpr ToRep fixed_point_scale<Exponent>::convert(FromRep const& rhs)
     {
-        return _impl::shift_left<FromExponent-exponent, rep>(rhs.data());
+        return _impl::shift_left<FromScale::exponent-exponent, ToRep>(rhs);
     }
 
     template<class Rep = int, int Exponent = 0>

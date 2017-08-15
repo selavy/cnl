@@ -49,12 +49,12 @@ namespace cnl {
     ///
     /// \sa negate, subtract, multiply, divide
 
-    template<class Lhs, class Rhs>
+    /*template<class Lhs, class Rhs>
     constexpr auto add(Lhs const& lhs, Rhs const& rhs)
     -> decltype(_impl::fp::operate<_impl::fp::named_function_tag>(lhs, rhs, _impl::add_tag))
     {
         return _impl::fp::operate<_impl::fp::named_function_tag>(lhs, rhs, _impl::add_tag);
-    }
+    }*/
 
     /// \brief calculates the difference of two \ref fixed_point values
     /// \headerfile cnl/fixed_point.h
@@ -68,12 +68,12 @@ namespace cnl {
     ///
     /// \sa negate, add, multiply, divide
 
-    template<class Lhs, class Rhs>
+    /*template<class Lhs, class Rhs>
     constexpr auto subtract(Lhs const& lhs, Rhs const& rhs)
     -> decltype(_impl::fp::operate<_impl::fp::named_function_tag>(lhs, rhs, _impl::subtract_tag))
     {
         return _impl::fp::operate<_impl::fp::named_function_tag>(lhs, rhs, _impl::subtract_tag);
-    }
+    }*/
 
     /// \brief calculates the product of two \ref fixed_point factors
     /// \headerfile cnl/fixed_point.h
@@ -87,12 +87,12 @@ namespace cnl {
     ///
     /// \sa negate, add, subtract, divide
 
-    template<class Lhs, class Rhs>
+    /*template<class Lhs, class Rhs>
     constexpr auto multiply(Lhs const& lhs, Rhs const& rhs)
     -> decltype(_impl::fp::operate<_impl::fp::named_function_tag>(lhs, rhs, _impl::multiply_tag))
     {
         return _impl::fp::operate<_impl::fp::named_function_tag>(lhs, rhs, _impl::multiply_tag);
-    }
+    }*/
 
     /// \brief calculates the quotient of two \ref fixed_point values
     /// \headerfile cnl/fixed_point.h
@@ -106,12 +106,12 @@ namespace cnl {
     ///
     /// \sa negate, add, subtract, multiply
 
-    template<class Lhs, class Rhs>
+    /*template<class Lhs, class Rhs>
     constexpr auto divide(Lhs const& lhs, Rhs const& rhs)
     -> decltype(_impl::fp::operate<_impl::fp::division_named_function_tag>(lhs, rhs, _impl::divide_tag))
     {
         return _impl::fp::operate<_impl::fp::division_named_function_tag>(lhs, rhs, _impl::divide_tag);
-    }
+    }*/
 }
 
 #endif  // CNL_FIXED_POINT_NAMED_H

@@ -14,7 +14,7 @@
 namespace cnl {
 
     // forward declaration
-    template<class Rep = int, int Exponent = 0>
+    template<class Rep, class Scale>
     class scaled;
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -62,10 +62,10 @@ namespace cnl {
     /// To define a fixed-point value 1 byte in size with a sign bit, 3 integer bits and 4 fractional bits:
     /// \snippet snippets.cpp define a scaled value
 
-    template<class Rep, int Exponent>
+    template<class Rep, class Scale>
     class scaled
-            : public _impl::number_base<scaled<Rep, Exponent>, Rep> {
-        using _base = _impl::number_base<scaled<Rep, Exponent>, Rep>;
+            : public _impl::number_base<scaled<Rep, Scale>, Rep> {
+        using _base = _impl::number_base<scaled<Rep, Scale>, Rep>;
     public:
         ////////////////////////////////////////////////////////////////////////////////
         // types
@@ -73,11 +73,20 @@ namespace cnl {
         /// alias to template parameter, \a Rep
         using rep = Rep;
 
+        /// alias to template parameter, \a Scale
+        using scale = Scale;
+
+        template<class UnscaledRep>
+        static constexpr auto unscaled(UnscaledRep const& value)
+        -> scaled<UnscaledRep, typename scale::unit_scale> {
+           return scaled<UnscaledRep, typename scale::unit_scale>::from_data(value);
+        };
+
         ////////////////////////////////////////////////////////////////////////////////
         // constants
 
         /// value of template parameter, \a Exponent
-        constexpr static int exponent = Exponent;
+//        constexpr static int exponent = Exponent;
 
         /// number of binary digits this type can represent;
         /// equivalent to [std::numeric_limits::digits](http://en.cppreference.com/w/cpp/types/numeric_limits/digits)
@@ -85,11 +94,11 @@ namespace cnl {
 
         /// number of binary digits devoted to integer part of value;
         /// can be negative for specializations with especially small ranges
-        constexpr static int integer_digits = digits+exponent;
+//        constexpr static int integer_digits = digits+exponent;
 
         /// number of binary digits devoted to fractional part of value;
         /// can be negative for specializations with especially large ranges
-        constexpr static int fractional_digits = -exponent;
+//        constexpr static int fractional_digits = -exponent;
 
         ////////////////////////////////////////////////////////////////////////////////
         // functions
@@ -106,32 +115,32 @@ namespace cnl {
         constexpr scaled() : _base() { }
 
         /// constructor taking a fixed-point type
-        template<class FromRep, int FromExponent>
-        constexpr scaled(scaled<FromRep, FromExponent> const& rhs)
-                : _base(scaled_to_rep(rhs))
+        template<class FromRep, class FromScale>
+        constexpr scaled(scaled<FromRep, FromScale> const& rhs)
+                : _base(scale::template convert<rep, FromScale>(rhs.data()))
         {
         }
 
         /// constructor taking an integral_constant type
         template<class Integral, Integral Constant>
         constexpr scaled(std::integral_constant<Integral, Constant> const&)
-                : scaled(scaled<Integral, 0>::from_data(Constant))
+                : scaled(unscaled(Constant))
         {
         }
 
         /// constructor taking an integer type
         template<class S, _impl::enable_if_t<std::numeric_limits<S>::is_integer, int> Dummy = 0>
         constexpr scaled(S const& s)
-                : scaled(scaled<S, 0>::from_data(s))
+                : scaled(unscaled(s))
         {
         }
 
         /// constructor taking an integral_constant type
-        template<class Integral, Integral Value, int Digits>
+        /*template<class Integral, Integral Value, int Digits>
         constexpr scaled(const_integer<Integral, Value, Digits, Exponent> ci)
                 : _base(ci << Exponent)
         {
-        }
+        }*/
 
         /// constructor taking a floating-point type
         template<class S, _impl::enable_if_t<std::numeric_limits<S>::is_iec559, int> Dummy = 0>
@@ -144,7 +153,7 @@ namespace cnl {
         template<class S, _impl::enable_if_t<std::numeric_limits<S>::is_integer, int> Dummy = 0>
         CNL_COPY_CONSTEXPR scaled& operator=(S s)
         {
-            return operator=(scaled<S, 0>::from_data(s));
+            return operator=(scaled<S, typename scale::unscale>::from_data(s));
         }
 
         /// copy assignment operator taking a floating-point type
@@ -156,10 +165,10 @@ namespace cnl {
         }
 
         /// copy assignement operator taking a fixed-point type
-        template<class FromRep, int FromExponent>
-        CNL_COPY_CONSTEXPR scaled& operator=(scaled<FromRep, FromExponent> const& rhs)
+        template<class FromRep, class FromScale>
+        CNL_COPY_CONSTEXPR scaled& operator=(scaled<FromRep, FromScale> const& rhs)
         {
-            _base::operator=(scaled_to_rep(rhs));
+            _base::operator=(scale::template convert<rep, FromScale>(rhs.data()));
             return *this;
         }
 
@@ -167,7 +176,7 @@ namespace cnl {
         template<class S, _impl::enable_if_t<std::numeric_limits<S>::is_integer, int> Dummy = 0>
         explicit constexpr operator S() const
         {
-            return rep_to_integral<S>(_base::data());
+            return scaled::rep_to_integral<S>(_base::data());
         }
 
         /// returns value represented as floating-point
@@ -184,14 +193,14 @@ namespace cnl {
         }
 
     private:
-        template<class S, _impl::enable_if_t<std::numeric_limits<S>::is_iec559, int> Dummy = 0>
-        static constexpr S one();
+        /*template<class S, _impl::enable_if_t<std::numeric_limits<S>::is_iec559, int> Dummy = 0>
+        static constexpr S one();*/
 
-        template<class S, _impl::enable_if_t<std::numeric_limits<S>::is_integer, int> Dummy = 0>
-        static constexpr S one();
+        /*template<class S, _impl::enable_if_t<std::numeric_limits<S>::is_integer, int> Dummy = 0>
+        static constexpr S one();*/
 
-        template<class S>
-        static constexpr S inverse_one();
+        /*template<class S>
+        static constexpr S inverse_one();*/
 
         template<class S>
         static constexpr S rep_to_integral(rep r);
@@ -202,33 +211,33 @@ namespace cnl {
         template<class S>
         static constexpr S rep_to_floating_point(rep r);
 
-        template<class FromRep, int FromExponent>
-        static constexpr rep scaled_to_rep(scaled<FromRep, FromExponent> const& rhs);
+        /*template<class FromRep, int FromExponent>
+        static constexpr rep scaled_to_rep(scaled<FromRep, FromExponent> const& rhs);*/
     };
 
     /// value of template parameter, \a Exponent
-    template<class Rep, int Exponent>
-    constexpr int scaled<Rep, Exponent>::exponent;
+    /*template<class Rep, int Exponent>
+    constexpr int scaled<Rep, Exponent>::exponent;*/
 
     /// number of binary digits this type can represent;
     /// equivalent to [std::numeric_limits::digits](http://en.cppreference.com/w/cpp/types/numeric_limits/digits)
-    template<class Rep, int Exponent>
-    constexpr int scaled<Rep, Exponent>::digits;
+    /*template<class Rep, int Exponent>
+    constexpr int scaled<Rep, Exponent>::digits;*/
 
     /// number of binary digits devoted to integer part of value;
     /// can be negative for specializations with especially small ranges
-    template<class Rep, int Exponent>
-    constexpr int scaled<Rep, Exponent>::integer_digits;
+    /*template<class Rep, class Scale>
+    constexpr int scaled<Rep, Scale>::integer_digits;*/
 
     /// number of binary digits devoted to fractional part of value;
     /// can be negative for specializations with especially large ranges
-    template<class Rep, int Exponent>
-    constexpr int scaled<Rep, Exponent>::fractional_digits;
+    /*template<class Rep, int Exponent>
+    constexpr int scaled<Rep, Exponent>::fractional_digits;*/
 
     ////////////////////////////////////////////////////////////////////////////////
     // general-purpose implementation-specific definitions
 
-    namespace _scaled_impl {
+    namespace _impl {
 
         ////////////////////////////////////////////////////////////////////////////////
         // cnl::_scaled_impl::is_scaled
@@ -238,8 +247,8 @@ namespace cnl {
                 : public std::false_type {
         };
 
-        template<class Rep, int Exponent>
-        struct is_scaled<scaled<Rep, Exponent>>
+        template<class Rep, class Scale>
+        struct is_scaled<scaled<Rep, Scale>>
                 : public std::true_type {
         };
 
@@ -251,7 +260,7 @@ namespace cnl {
         // 2) converting between integer types of different sizes can lose significant bits during shift right
 
         // Exponent == 0
-        template<int exp, class Output, class Input>
+        /*template<int exp, class Output, class Input>
         constexpr Output shift_left(Input i)
         {
             using larger = typename std::conditional<
@@ -261,12 +270,12 @@ namespace cnl {
             return (exp>-std::numeric_limits<larger>::digits)
                    ? static_cast<Output>(_impl::scale<larger>(static_cast<larger>(i), 2, exp))
                    : Output{0};
-        }
+        }*/
 
         ////////////////////////////////////////////////////////////////////////////////
         // file-local implementation-specific definitions
 
-        namespace fp {
+        /*namespace fp {
             namespace type {
                 ////////////////////////////////////////////////////////////////////////////////
                 // cnl::_scaled_impl::fp::type::pow2
@@ -309,65 +318,65 @@ namespace cnl {
                     return pow2<S, Exponent+8>()*S(.003906250);
                 }
             }
-        }
+        }*/
     }
 
     ////////////////////////////////////////////////////////////////////////////////
     // cnl::scaled<> member definitions
 
-    template<class Rep, int Exponent>
+    /*template<class Rep, int Exponent>
     template<class S, _impl::enable_if_t<std::numeric_limits<S>::is_iec559, int> Dummy>
     constexpr S scaled<Rep, Exponent>::one()
     {
         return _scaled_impl::fp::type::pow2<S, -exponent>();
-    }
+    }*/
 
-    template<class Rep, int Exponent>
+    /*template<class Rep, int Exponent>
     template<class S, _impl::enable_if_t<std::numeric_limits<S>::is_integer, int> Dummy>
     constexpr S scaled<Rep, Exponent>::one()
     {
         return scaled<S, 0>::from_data(1);
-    }
+    }*/
 
-    template<class Rep, int Exponent>
+    /*template<class Rep, int Exponent>
     template<class S>
     constexpr S scaled<Rep, Exponent>::inverse_one()
     {
         static_assert(std::numeric_limits<S>::is_iec559, "S must be floating-point type");
         return _scaled_impl::fp::type::pow2<S, exponent>();
-    }
+    }*/
 
-    template<class Rep, int Exponent>
+    /*template<class Rep, int Exponent>
     template<class S>
     constexpr S scaled<Rep, Exponent>::rep_to_integral(rep r)
     {
         static_assert(std::numeric_limits<S>::is_integer, "S must be integral type");
 
         return _scaled_impl::shift_left<exponent, S>(r);
-    }
+    }*/
 
-    template<class Rep, int Exponent>
+    /*template<class Rep, int Exponent>
     template<class S>
     constexpr typename scaled<Rep, Exponent>::rep scaled<Rep, Exponent>::floating_point_to_rep(S s)
     {
         static_assert(std::numeric_limits<S>::is_iec559, "S must be floating-point type");
         return static_cast<rep>(s*one<S>());
-    }
+    }*/
 
-    template<class Rep, int Exponent>
+    /*template<class Rep, int Exponent>
     template<class S>
     constexpr S scaled<Rep, Exponent>::rep_to_floating_point(rep r)
     {
         static_assert(std::numeric_limits<S>::is_iec559, "S must be floating-point type");
         return S(r)*inverse_one<S>();
-    }
+    }*/
 
-    template<class Rep, int Exponent>
+    /*template<class Rep, int Exponent>
     template<class FromRep, int FromExponent>
     constexpr typename scaled<Rep, Exponent>::rep scaled<Rep, Exponent>::scaled_to_rep(scaled<FromRep, FromExponent> const& rhs)
     {
         return _scaled_impl::shift_left<FromExponent-exponent, rep>(rhs.data());
-    }
+    }*/
 
 }
 
