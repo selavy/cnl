@@ -34,7 +34,7 @@ namespace cnl {
 
             number_base() = default;
 
-            explicit constexpr number_base(rep const& r)
+            CNL_FORCE_INLINE explicit constexpr number_base(rep const& r)
                 : _rep(r) { }
 
             template<class T>
@@ -258,7 +258,7 @@ namespace cnl {
 
     namespace _impl {
         template<class Derived, class Rep>
-        constexpr Rep to_rep(number_base<Derived, Rep> const& number) {
+        CNL_FORCE_INLINE constexpr Rep to_rep(number_base<Derived, Rep> const& number) {
             return number._rep;
         }
     }

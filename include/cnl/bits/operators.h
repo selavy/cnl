@@ -61,7 +61,7 @@ namespace cnl {
 
         struct multiply_op {
             template<class Lhs, class Rhs>
-            constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const -> decltype(lhs*rhs)
+            CNL_FORCE_INLINE constexpr auto operator()(Lhs const& lhs, Rhs const& rhs) const -> decltype(lhs*rhs)
             {
                 return lhs*rhs;
             }
@@ -389,7 +389,7 @@ namespace cnl {
     // binary operators
 #define CNL_DEFINE_BINARY_OPERATOR(OP, NAME) \
     template<class LhsOperand, class RhsOperand> \
-    constexpr auto operator OP (LhsOperand const& lhs, RhsOperand const& rhs) \
+    CNL_FORCE_INLINE constexpr auto operator OP (LhsOperand const& lhs, RhsOperand const& rhs) \
     -> decltype(cnl::_impl::binary_operator<cnl::_operators_impl::enable_binary_t< \
             LhsOperand, RhsOperand, cnl::_impl::NAME>, LhsOperand, RhsOperand>()(lhs, rhs)) \
     { \

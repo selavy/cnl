@@ -43,6 +43,21 @@
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
+// CNL_FORCE_INLINE macro definition
+
+#if defined(CNL_FORCE_INLINE)
+#error CNL_FORCE_INLINE already defined
+#endif
+
+#if defined(_MSC_VER)
+#define CNL_FORCE_INLINE __forceinline
+#elif defined(__clang__) || defined(__GNUG__)
+#define CNL_FORCE_INLINE __attribute__((always_inline))
+#else
+#define CNL_FORCE_INLINE inline
+#endif
+
+////////////////////////////////////////////////////////////////////////////////
 // CNL_RELAXED_CONSTEXPR macro definition
 
 #if defined(CNL_RELAXED_CONSTEXPR)

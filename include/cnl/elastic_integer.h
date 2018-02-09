@@ -76,7 +76,7 @@ namespace cnl {
 
     /// \brief Overload of \ref to_rep(Number const& number) for \ref elastic_integer.
     template<int Digits, class Narrowest>
-    constexpr auto to_rep(elastic_integer<Digits, Narrowest> const& number)
+    CNL_FORCE_INLINE constexpr auto to_rep(elastic_integer<Digits, Narrowest> const& number)
     -> typename elastic_integer<Digits, Narrowest>::rep
     {
         using base_type = typename elastic_integer<Digits, Narrowest>::_base;
@@ -97,7 +97,7 @@ namespace cnl {
 
     template<int Digits, class Narrowest, class Rep>
     struct from_rep<elastic_integer<Digits, Narrowest>, Rep> {
-        constexpr auto operator()(elastic_integer<Digits, Narrowest> const& rep) const
+        CNL_FORCE_INLINE constexpr auto operator()(elastic_integer<Digits, Narrowest> const& rep) const
         -> elastic_integer<Digits, cnl::_impl::make_signed_t<Narrowest, cnl::is_signed<Rep>::value>>
         {
             return rep;
@@ -181,21 +181,21 @@ namespace cnl {
         constexpr elastic_integer() = default;
         
         /// common copy constructor
-        constexpr elastic_integer(elastic_integer const& rhs)
+        CNL_FORCE_INLINE constexpr elastic_integer(elastic_integer const& rhs)
                 :_base(rhs)
         {
         }
 
         /// construct from numeric type
         template<class Number, _impl::enable_if_t<numeric_limits<Number>::is_specialized, int> Dummy = 0>
-        constexpr elastic_integer(Number n)
+        CNL_FORCE_INLINE constexpr elastic_integer(Number n)
                 : _base(static_cast<rep>(n))
         {
         }
 
         /// constructor taking an elastic_integer type
         template<int FromWidth, class FromNarrowest>
-        explicit constexpr elastic_integer(elastic_integer<FromWidth, FromNarrowest> const& rhs)
+        CNL_FORCE_INLINE explicit constexpr elastic_integer(elastic_integer<FromWidth, FromNarrowest> const& rhs)
                 :_base(static_cast<rep>(to_rep(rhs)))
         {
         }
@@ -431,7 +431,7 @@ namespace cnl {
         template<class Operator, int LhsDigits, class LhsNarrowest, int RhsDigits, class RhsNarrowest>
         struct binary_operator<Operator,
                 elastic_integer<LhsDigits, LhsNarrowest>, elastic_integer<RhsDigits, RhsNarrowest>> {
-            constexpr auto operator()(
+            CNL_FORCE_INLINE constexpr auto operator()(
                     elastic_integer<LhsDigits, LhsNarrowest> const& lhs,
                     elastic_integer<RhsDigits, RhsNarrowest> const& rhs) const
             -> typename operate_params<Operator, LhsDigits, LhsNarrowest, RhsDigits, RhsNarrowest>::result_type
