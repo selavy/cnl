@@ -19,6 +19,30 @@ namespace {
 
     ////////////////////////////////////////////////////////////////////////////////
     // simple one-off tests
+
+    namespace test_comparison_operator {
+        static_assert(
+                cnl::_impl::comparison_operator<cnl::_impl::greater_than_op, elastic_integer<31>, elastic_integer<31>>()(
+                        elastic_integer<31>{0x7fffffff}, elastic_integer<31>{cnl::numeric_limits<cnl::int32>::min()}),
+                "cnl::elastic_integer test failed");
+        static_assert(
+                cnl::_impl::comparison_operator<cnl::_impl::greater_than_op, elastic_integer<31>, elastic_integer<31>>()(
+                        elastic_integer<31>{0x7fffffff}, elastic_integer<31>{cnl::numeric_limits<cnl::int32>::min()}),
+                "cnl::elastic_integer test failed");
+        static_assert(cnl::_impl::comparison_operator<cnl::_impl::equal_op, elastic_integer<1>, std::int32_t>()(
+                elastic_integer<1>{0}, INT32_C(0)),
+                "cnl::elastic_integer test failed");
+        static_assert(cnl::_impl::comparison_operator<equal_op, elastic_integer<8>, elastic_integer<8>>()(
+                elastic_integer<8>{1L}, elastic_integer<8>{1}),
+                "elastic_integer comparison test failed");
+        static_assert(cnl::_impl::comparison_operator<equal_op, elastic_integer<12, cnl::uint16>, int>()(
+                elastic_integer<12, cnl::uint16>{1324}, 1324),
+                "cnl::elastic_integer test failed");
+        static_assert(cnl::_impl::comparison_operator<equal_op, elastic_integer<12, cnl::uint16>, int>()(
+                ~elastic_integer<12, cnl::uint16>{0}, 0xFFF),
+                "cnl::elastic_integer test failed");
+    }
+
     namespace test_depth {
         static_assert(cnl::_impl::depth<int>::value == 0, "");
         static_assert(std::is_same<decltype(to_rep(std::declval<elastic_integer<2>>())), int>::value, "");
@@ -90,14 +114,6 @@ namespace {
                 "failed to meet conditions for applying operator*(double, cnl::elastic_integer)");
         static_assert(is_derived_from_number_base<elastic_integer<1>>::value,
                 "cnl::_impl::is_derived_from_number_base test failed");
-        static_assert(
-                cnl::_impl::comparison_operator<cnl::_impl::greater_than_op, elastic_integer<31>, elastic_integer<31>>()(
-                        elastic_integer<31>{0x7fffffff}, elastic_integer<31>{cnl::numeric_limits<cnl::int32>::min()}),
-                "cnl::elastic_integer test failed");
-        static_assert(
-                cnl::_impl::comparison_operator<cnl::_impl::greater_than_op, elastic_integer<31>, elastic_integer<31>>()(
-                        elastic_integer<31>{0x7fffffff}, elastic_integer<31>{cnl::numeric_limits<cnl::int32>::min()}),
-                "cnl::elastic_integer test failed");
         static_assert(identical(
                 typename std::common_type<elastic_integer<31>, elastic_integer<32, unsigned>>::type{},
                 elastic_integer<32>{}),
@@ -105,22 +121,9 @@ namespace {
         static_assert(cnl::_impl::less_than_tag(elastic_integer<31, unsigned>{-1},
                                                  elastic_integer<31>{1}),
                       "cnl::elastic_integer test failed");
-        static_assert(cnl::_impl::comparison_operator<cnl::_impl::equal_op, elastic_integer<1>, std::int32_t>()(
-                elastic_integer<1>{0}, INT32_C(0)),
-                "cnl::elastic_integer test failed");
         static_assert(identical(
                 cnl::_impl::binary_operator<cnl::_impl::multiply_op, elastic_integer<1>, std::int32_t>()(
                         elastic_integer<1>{0}, INT32_C(0)), elastic_integer<31, int>{0}),
-                "cnl::elastic_integer test failed");
-
-        static_assert(cnl::_impl::comparison_operator<equal_op, elastic_integer<8>, elastic_integer<8>>()(
-                elastic_integer<8>{1L}, elastic_integer<8>{1}),
-                "elastic_integer comparison test failed");
-        static_assert(cnl::_impl::comparison_operator<equal_op, elastic_integer<12, cnl::uint16>, int>()(
-                elastic_integer<12, cnl::uint16>{1324}, 1324),
-                "cnl::elastic_integer test failed");
-        static_assert(cnl::_impl::comparison_operator<equal_op, elastic_integer<12, cnl::uint16>, int>()(
-                ~elastic_integer<12, cnl::uint16>{0}, 0xFFF),
                 "cnl::elastic_integer test failed");
     }
 
